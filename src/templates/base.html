@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+    <title>Document</title>
+    {% endblock  %}
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}" />
+    <script src="{% static 'bootstrap/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/jsQR.min.js' %}"></script>
+    <script type="module" src="{% static 'js/chart.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/jspdf.min.js' %}"></script>
+    <script src="{% static 'js/jspdf.plugin.autotable.min.js' %}"></script>
+    <script src="{% static 'js/qrious.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/personnel.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/camera.css' %}" />
+</head>
+<body>
+
+    <nav
+    class="container d-inline-block bg-danger p-0 "
+    style="height: 100vh; width: 15vw  !important; border-radius:  0 5px 5px 0; position: fixed !important; top: 0 !important;"
+    >
+    <div class="display-4 w-100 text-center font-weight-bolder"><img src="{% static 'img/icon.png' %}" class="w-50 my-5" style="transform:scale(1.5)"/></div>
+    <div class="container-fluid">
+      <ul class="navbar-nav d-inline-flex text-light w-100" >
+        <li class="nav-item w-100">
+          <a class="nav-link text-light h5" id="listItemMenu" href="{% url 'employee' %}">Personnels</a>
+        </li>
+        <li class="nav-item w-100" >
+          <a class="nav-link text-light h5" id="listItemMenu" href="{% url 'agence' %}">Agence</a>
+        </li>
+        <li class="nav-item w-100" >
+          <a class="nav-link text-light h5" id="listItemMenu" href="{% url 'postes' %}">Postes</a>
+        </li>
+        <li class="nav-item w-100" id="listItemMenu">
+          <a class="nav-link text-light h5"  href="{% url 'conges' %}">Congés</a>
+        </li>
+        <li class="nav-item w-100" id="listItemMenu">
+          <a class="nav-link text-light h5"  href="{% url 'presences' %}">Presences</a>
+        </li>
+        <li class="nav-item w-100" >
+          <a class="nav-link text-light h5" id="listItemMenu" href="{% url 'logout' %}">Deconnexion</a>
+        </li>
+      </ul>
+    </div>
+    </nav>
+    {% block content %}
+    {% endblock  %}
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

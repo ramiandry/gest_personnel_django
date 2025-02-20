@@ -1,0 +1,90 @@
+body {
+    margin: 0;
+    padding: 0%;
+    width: 100%;
+    height: 100%;
+  }
+  
+  #camera,
+  #camera-view{
+    position: relative;
+    margin: 20px auto;;
+    width: 20vw;
+    height: auto;
+  }
+  
+  #camera-sensor {
+    display: none;
+  }
+  
+  #camera-output {
+    width: 120px !important;
+    height: 120px !important;
+    display: none;
+  }
+  
+  #camera-sensor,
+  #camera-view {
+    transform: scaleX(-1);
+    filter: Flip;
+  }
+  
+  main::before{
+    position: absolute;
+    top: 20px;
+    content: " ";
+    width: 100%;
+    z-index: 200;
+    border: 1px solid gray;
+    box-shadow: 0 5px 30px black;
+    animation: scan 1s ease-in-out;
+    animation-iteration-count: infinite;
+  
+  }
+  
+  @keyframes scan {
+    to{
+      top: 10px;
+    }
+    from{
+      top:17vw;
+    }
+  }
+  
+  #camera-triger {
+    width: 200px;
+    padding: 15px 20px;
+    font-size: 17px;
+    border-radius: 20px;
+    background: transparent;
+    box-shadow: 0 5px 10px 0 gray;
+    position: fixed;
+    bottom: 40px;
+    left: calc(50%-100%);
+  }
+  
+  .taken {
+    height: 200px !important;
+    width: 200px !important;
+    transition: all 0.5s ease-in-out;
+    border: none;
+    box-shadow: 10px 5px 10px 0 rgba(0, 0, 0, 2);
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+  }
+  
+  #qr-code {
+    position: absolute;
+    right: -100%;
+  }
+  #result {
+    display: block;
+    border: 1px solid gray;
+    width: 30vw !important;
+    height: 10vh !important;
+    font: 1em sans-serif;
+    margin: 2px auto;
+    padding: 5px;
+  }
+  

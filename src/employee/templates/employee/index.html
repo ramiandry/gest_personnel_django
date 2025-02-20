@@ -1,0 +1,497 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Personnels</title>
+{% endblock %} {% block content %}
+<div class="container bg-light shadow-sm px-3">
+  <form method="post" class="form d-flex justify-content-around align-items-center">
+    <div class="form-group d-flex my-1 w-50 align-items-center justify-content-center">
+      <label for="recherche" class="text-primary h4">Recherche :</label>
+      <input type="search" name="recherche" id="input" class="form-control w-50 mx-3" />
+      <button type="button" class="btn btn-light">
+        <img src="{% static 'img/search.png' %}" alt="" srcset="" width="30vw" />
+      </button>
+    </div>
+  </form>
+  <div class="my-2 d-flex justify-content-between align-items-center">
+    <button class="btn btn-primary h3" data-bs-toggle="modal" data-bs-target="#addModal">
+      Nouveau Personnel
+    </button>
+    <button class="btn btn-danger" onclick="createPDF()">Telecharger QR code</button>
+  </div>
+  <div class="w-90 m-auto">
+    <table class="table table-light table-striped">
+      <thead>
+        <tr>
+          <th class="text-center">Avatar</th>
+          <th class="w-22">Nom</th>
+          <th class="w-23">Prénoms</th>
+          <th class="w-5">Sexe</th>
+          <th class="w-5">Poste</th>
+          <th class="w-5">Agence</th>
+          <th class="text-center w-15">Date d'embauche</th>
+          <th class="text-center">Voir information</th>
+        </tr>
+      </thead>
+      <tbody id="myTable" class="bg-light">
+        {% for data in dataEmployee %}
+        <tr>
+          <td class="text-center">
+            <img src="{{data.avatar.url}}" alt="" srcset="" class="rounded-circle bg-light m-auto" width="30vw" />
+          </td>
+          <td class="nom">{{data.nom}}</td>
+          <td class="nom">{{data.prenom}}</td>
+          <td>{% if data.sexe %} Femme {% else %} Homme {% endif %}</td>
+          <td class="">{{data.poste.nom_poste}}</td>
+          <td class="">{{data.agence.nom}}</td>
+          <td class="text-center">{{data.date_embauche}}</td>
+          <td class="text-center">
+            <button class="btn btn-info w-75" data-bs-toggle="modal" data-bs-target="#info{{data.pk}}Modal">
+              Voir
+            </button>
+          </td>
+        </tr>
+        <div class="modal" id="info{{data.pk}}Modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Modal body -->
+              <form>
+                <div class="modal-body">
+                  <div class="modal-body px-3">
+                    <div class="card m-auto mb-1 d-flex justify-content-center" style="width: 10vw; height: 22vh">
+                      <img class="card-img-top" src="{{data.avatar.url}}" alt="" id="" srcset=""
+                        style="width: 10vw; height: 21vh" />
+                    </div>
+
+                    <input type="file" name="image" id="imageProfile{{data.pk}}" class="form-control m-auto"
+                      data-bs-toggle="modal" data-bs-target="#editProfilModal{{data.pk}}"
+                      onChange="uploadImage('imageProfile{{data.pk}}','imageViewProfile{{data.pk}}')" />
+                    <input type="hidden" name="id" value="{{i.id}}" />
+                  </div>
+                  <div class="mb-1">
+                    <label>Nom et prenom:</label>
+                    <div class="input-group mt-1 w-80 h-25">
+                      <input type="text" class="form-control bg-light w-80" disabled
+                        value="{{data.nom}} {{data.prenom}}" />
+                      <span class="input-group-text p-0">
+                        <button class="btn p-1 m-0 w-100" type="button" data-bs-toggle="modal"
+                          data-bs-target="#editNameModal{{data.pk}}">
+                          <img src="{% static 'img/edit_row.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="mb-1">
+                    <label>Sexe:</label>
+                    <div class="input-group mt-1 w-80 h-25">
+                      <input type="text" class="form-control bg-light w-80" disabled
+                        value="{% if data.sexe  %}Femme{% else %}Homme{% endif %}" />
+                      <span class="input-group-text p-0">
+                        <button type="button" class="btn p-1 m-0 w-100" data-bs-toggle="modal"
+                          data-bs-target="#editSexeModal{{data.pk}}">
+                          <img src="{% static 'img/edit_profile.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="mb-1">
+                    <label>Date de naissance:</label>
+                    <div class="input-group w-80 h-25 mt-1">
+                      <input type="text" class="form-control bg-light w-80" disabled
+                        value="{{data.date_de_naissance}}" />
+                      <span class="input-group-text p-0">
+                        <button class="btn p-1 m-0 w-100" data-bs-toggle="modal" type="button"
+                          data-bs-target="#editDDNModal{{data.pk}}""
+                        >
+                          <img
+                            src=" {% static 'img/editDate.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="mb-1">
+                    <label>Date d'embauche:</label>
+                    <div class="input-group w-80 h-25 mt-1">
+                      <input type="text" class="form-control bg-light w-80" disabled value="{{data.date_embauche}}" />
+                      <span class="input-group-text p-0">
+                        <button class="btn p-1 m-0 w-100" data-bs-toggle="modal" type="button"
+                          data-bs-target="#editDEModal{{data.pk}}""
+                        >
+                          <img
+                            src=" {% static 'img/editDate.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="mb-1">
+                    <label>Poste:</label>
+                    <div class="input-group mt-1 w-80 h-25">
+                      <input type="text" class="form-control bg-light w-80" disabled value="{{data.poste.nom_poste}}" />
+                      <span class="input-group-text p-0">
+                        <button class="btn p-1 m-0 w-100" type="button" data-bs-toggle="modal"
+                          data-bs-target="#editPosteModal{{data.pk}}">
+                          <img src="{% static 'img/edit_item.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mb-1">
+                    <label>Agence:</label>
+                    <div class="input-group mt-1 w-80 h-25">
+                      <input type="text" class="form-control bg-light w-80" disabled value="{{data.agence.nom}}" />
+                      <span class="input-group-text p-0">
+                        <button class="btn p-1 m-0 w-100" type="button" data-bs-toggle="modal"
+                          data-bs-target="#editAgenceModal{{data.pk}}">
+                          <img src="{% static 'img/edit_item.png' %}" alt="" srcset="" width="30px" height="30px" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+
+
+          <!--  Modal  Modification Nom et prenom -->
+          <div class="modal" id="editNameModal{{data.pk}}">
+            <div class="modal-dialog modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+                    <div class="my-2 w-80">
+                      <label for="nom">Nom</label>
+                      <input type="text" value="{{data.nom}}" name="nom" class="form-control" />
+                    </div>
+                    <div class="my-2 w-80">
+                      <label for="prenom">Prénoms</label>
+                      <input type="text" value="{{data.prenom}}" name="prenom" class="form-control" />
+                    </div>
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name='btnAction' value="modNom" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--  Modal  Modification Sexe -->
+          <div class="modal" id="editSexeModal{{data.pk}}">
+            <div class="modal-dialog modal-sm modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+                    <div class="my-2  mx-3 w-80">
+                      <input type="radio" value="0" name="sexe" class="" />
+                      <label for="nom">Homme</label>
+                    </div>
+                    <div class="my-2 mx-3 w-80">
+                      <input type="radio" value="1" name="sexe" class="" />
+                      <label for="nom">Femme</label>
+                    </div>
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name="btnAction" value="modSexe" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--  Modal  Modification Date embauche -->
+          <div class="modal" id="editDEModal{{data.pk}}">
+            <div class="modal-dialog  modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+
+                    <div class="my-2 mx-3 w-80">
+                      <label for="nom" class="h3 ">Date d'embauche</label>
+                      <input type="date" name="de" class="form-control mt-2" />
+                    </div>
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name="btnAction" value="modDe" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--  Modal  Modification Date de naissance -->
+          <div class="modal" id="editDDNModal{{data.pk}}">
+            <div class="modal-dialog  modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+
+                    <div class="my-2 mx-3 w-80">
+                      <label for="nom" class="h3 ">Date de naissance</label>
+                      <input type="date" name="ddn" class="form-control mt-2" />
+                    </div>
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name="btnAction" value="modDdn" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--  Modal  Modification Poste -->
+          <div class="modal" id="editPosteModal{{data.pk}}">
+            <div class="modal-dialog modal-sm modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+
+                    {% for i in dataPostes %}
+
+                    <div class="my-2  mx-3 w-80">
+                      <input type="radio" value="{{i.pk}}" name="poste" class="" />
+                      <label for="nom">{{i.nom_poste}}</label>
+                    </div>
+                    {% endfor %}
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name="btnAction" value="modPoste" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--  Modal  Modification Agence -->
+          <div class="modal" id="editAgenceModal{{data.pk}}">
+            <div class="modal-dialog modal-sm modal-dialog-centered w-30">
+              <div class="modal-body">
+                <div class="modal-content p-3">
+                  <form method="post">
+                    {% csrf_token %}
+          
+                    {% for i in dataAgence %}
+          
+                    <div class="my-2  mx-3 w-80">
+                      <input type="radio" value="{{i.pk}}" name="agence" class="" />
+                      <label for="nom">{{i.nom}}</label>
+                    </div>
+                    {% endfor %}
+                    <input type="hidden" name="id" value="{{data.pk}}" />
+                    <div class="d-flex justify-content-between">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler>
+                        Annuler
+                      </button>
+                      <button type="submit" name="btnAction" value="modAgence" class="btn btn-success"
+                        data-bs-dismiss="modal">
+                        Modifier
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<!--  Modal  AddPerso -->
+<div class="modal" id="addModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Ajouter un personnel</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form method="post" class="form-group" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="profile d-flex justify-content-around">
+            <div class="card" style="width: 10vw; height: 22vh">
+              <img class="card-img-top" src="{% static 'img/user.png' %}" alt="" srcset="" id="imageViewAdd"
+                width="15vw" height="90%" />
+              <input type="file" accept="image/*" name="image" onChange="uploadImage('imageAdd','imageViewAdd')"
+                id="imageAdd" class="my-1" />
+            </div>
+            <div class="my-2" style="height: 22vh">
+              <div class="">
+                <label for="nom">Nom </label>
+                <input type="text" placeholder="Nom" name="nom" class="form-control" />
+              </div>
+              <div>
+                <label for="prenom">Prénoms </label>
+                <input type="text" placeholder="Prénoms" name="prenom" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <div class="my-2 w-80">
+            <label for="ddn">Date de naissance </label>
+            <input type="date" placeholder="Prénoms" name="ddn" class="form-control" />
+          </div>
+
+          <div class="my-2 w-80">
+            <label for="prenom">Date d'embauche </label>
+            <input type="date" placeholder="Prénoms" name="de" class="form-control" />
+          </div>
+
+          <div class="my-2 w-80">
+            <label for="sexe">Sexe </label>
+            <select name="sexe" id="" class="form-select">
+              <option value="0">Homme</option>
+              <option value="1">Femme</option>
+            </select>
+          </div>
+          <div class="my-2 w-80">
+            <label for="Poste">Poste </label>
+            <select name="poste" id="" class="form-select">
+              {% for i in dataPostes %}
+              <option value="{{i.pk}}">{{i.nom_poste}}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="my-2 w-80">
+            <label for="Poste">Agence </label>
+            <select name="agence" id="" class="form-select">
+              {% for i in dataAgence %}
+              <option value="{{i.pk}}">{{i.nom}}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success" name="btnAction" value="btnAjouter" data-bs-dismiss="modal">
+              Ajouter
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!--  Modal  Modification Nom et prenom -->
+    <div class="modal" id="editNameModal">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-body">
+          <div class="modal-content">
+            <form method="post">
+              {% csrf_token %}
+              <div class="my-2 w-80">
+                <label for="nom">Nom</label>
+                <input type="text" value="" name="nom" class="form-control" />
+              </div>
+              <div class="my-2 w-80">
+                <label for="prenom">Prénoms</label>
+                <input type="text" value="" name="prenom" class="form-control" />
+              </div>
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" Annuler></button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                  Modifier
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $("#input").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+
+    //-----creation de pdf
+
+
+    function createPDF() {
+      var left = 50, bottom = 40;
+      var doc = new jsPDF("landscape", "pt", "a4");
+      {% for i in dataEmployee %}
+      var qrcode = document.createElement("canvas");
+      new QRious({
+        element: qrcode,
+        background: "#ffffff",
+        backgroundAlpha: 1,
+        foreground: "#000",
+        foregroundAlpha: 1,
+        level: "H",
+        padding: 0,
+        size: 128,
+        value: "{{i.id}}"
+      });
+      doc.text("{{i.nom}} {{i.prenom}}", left+20, bottom-10)
+      var newCanvasImg = qrcode.toDataURL("image/png", 1.0);
+      doc.addImage(newCanvasImg, "PNG", left, bottom, 150, 150);
+      left+=200;
+      if (left>=800) {
+        bottom+= 200;
+        left=50;
+      }
+      {% endfor %}
+      doc.save("qrcode.pdf");
+      console.log(left)
+    }
+  </script>
+  {% endblock %}
+</div>

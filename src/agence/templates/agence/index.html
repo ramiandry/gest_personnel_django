@@ -1,0 +1,247 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Personnels</title>
+{% endblock %} {% block content %}
+<div class="container bg-light shadow-sm px-3">
+  <div class="card mt-2">
+    <p class="h1 text-uppercase text-center text-danger">gestion d'agence</p>
+  </div>
+
+  <div class="container-fluid mt-2 d-flex justify-content-between">
+    <button
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#addModal"
+    >
+      Nouvelle agence
+    </button>
+  </div>
+  <div class="container-fluid mt-2">
+    <table class="table table-light table-borderer">
+      <thead>
+        <tr>
+          <th>Numero</th>
+          <th>Nom d'agence</th>
+          <th>Adresse</th>
+          <th>Email</th>
+          <th>N° Telephone</th>
+          <th>Information</th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for i in data %}
+
+        <tr>
+          <td>{{i.pk}}</td>
+          <td>{{i.nom}}</td>
+          <td>{{i.adresse}}</td>
+          <td>{{i.email}}</td>
+          <td>{{i.tel}}</td>
+          <td>
+            <button
+              data-bs-toggle="modal"
+              data-bs-target="#modModal{{i.pk}}"
+              class="btn btn-warning w-80"
+              style="width: 80%"
+            >
+              Modifier
+            </button>
+
+            <!-- The Modal Suppression-->
+            <div class="modal" id="modModal{{i.pk}}">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <!-- Modal Header -->
+                  <div class="modal-header px-3">
+                    <h4 class="modal-title">Modifier agence</h4>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                    ></button>
+                  </div>
+                  <form class="" method="post">
+                    {% csrf_token %}
+                    <!-- Modal body -->
+                    <input type="hidden" value="{{i.pk}}" name="id" />
+                    <div class="modal-body text-justify">
+                      <div class="mb-3">
+                        <label for="" class="form-label">Nom d'agence</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="nom"
+                          id=""
+                          value="{{i.nom}}"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="" class="form-label">Email</label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          name="email"
+                          id=""
+                          value="{{i.email}}"
+                        />
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="" class="form-label">Adresse</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="adresse"
+                          id=""
+                          placeholder=""
+                          value="{{i.adresse}}"
+                        />
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="" class="form-label">N° Telephone</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="tel"
+                          id=""
+                          placeholder=""
+                          value="{{i.tel}}"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div
+                      class="modal-footer d-flex justify-content-around align-items-center"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-danger px-5"
+                        data-bs-dismiss="modal"
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        type="submit"
+                        name="btnAction"
+                        value="btnMod"
+                        class="btn btn-success px-5"
+                        data-bs-dismiss="modal"
+                      >
+                        Ajouter
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- The Modal Ajout-->
+<div class="modal" id="addModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header p-1 px-3">
+        <h2 class="modal-title p-0 m-0">Nouvelle agence</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form class="" method="post">
+        {% csrf_token %}
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="m-3">
+            <label for="debut">Nom d'agence :</label>
+            <input
+              type="text"
+              class="form-control"
+              name="nom"
+              style="width: 100%"
+            />
+          </div>
+
+          <div class="m-3">
+            <label for="fin">Email :</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              style="width: 100%"
+            />
+          </div>
+
+          <div class="m-3">
+            <label for="debut">Adresse :</label>
+            <input
+              type="text"
+              class="form-control"
+              name="adresse"
+              style="width: 100%"
+            />
+          </div>
+
+          <div class="m-3">
+            <label for="debut">N° Telephone :</label>
+            <input
+              type="text"
+              class="form-control"
+              name="tel"
+              style="width: 100%"
+            />
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div
+          class="modal-footer d-flex justify-content-around align-items-center"
+        >
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Annuler
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            value="ajouter"
+            name="btnAction"
+          >
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $("#input").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myList li").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+
+  function filtrer(idbtn, valeur) {
+    $(document).ready(function () {
+      $("#" + idbtn).on("click", function () {
+        var value = valeur.toLowerCase();
+        $("#myTable tr").filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+  }
+
+  $("#btnTout").click();
+</script>
+{% endblock %}

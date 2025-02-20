@@ -1,0 +1,47 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Dashboard</title>
+{% endblock %} {% block content %}
+
+<div class="container h-100">
+  <div class="border-bottom border-danger">
+    <h1 class="font-weight-bolder text-uppercase text-danger">Dashboard</h1>
+  </div>
+  <div class="mt-2" style="height: 75vh">
+    <div style="height: 100%">
+      <div class="border border-danger w-75 bg-light">
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+      </div>
+      <div></div>
+    </div>
+    <div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+</div>
+
+    <script>
+       
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+</script>
+{% endblock %}

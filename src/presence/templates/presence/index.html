@@ -1,0 +1,260 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Presences</title>
+{% endblock %} {% block content %}
+<div class="container">
+  <div
+    class="border-bottom border-2 border-danger text-center d-flex align-items-center justify-content-between text-uppercase"
+  >
+    <div class="d-flex align-items-center">
+      <button
+        class="btn d-block w-5"
+        type="button"
+        id="scanner"
+        name="btnAction"
+        style="width: min-content"
+        value="modPoste"
+        class="btn p-0"
+        data-bs-toggle="modal"
+        data-bs-target="#scannerModal"
+      >
+        <img src="{% static 'img/qr_code.png' %}" width="100px" class="mr-3" />
+        <span class="h4 text-danger">Scanneur</span>
+      </button>
+      <span
+        class="display-2 text-danger ml-3"
+        style="font-weight: bolder; margin-left: 20px !important"
+      >
+        Présences</span
+      >
+    </div>
+    <div>
+      <span class="h1 text-danger" id="timer"></span>
+    </div>
+  </div>
+  <div class="d-flex my-2 justify-content-center align-items-center">
+    <label for="" class="h5">Date:</label>
+    <input type="date" id="datefilter" class="form-control w-25 mx-2" >
+  </div>
+  <div class="container-fluid mt-3 w-75">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Matricule</th>
+          <th class="w-25">Nom et Prénome</th>
+          <th> Date et Heure</th>
+          <th>Presence</th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for i in data %}
+        <tr  
+        {% if i.etat == 1 %}
+          class="table-success"
+        {% elif i.etat == 2 %}
+        class="table-danger"
+        {% endif %}
+        >
+          <td>{{i.employee.id}}</td>
+          <td>{{i.employee.nom}} {{i.employee.prenom}}</td>
+          <td>{{i.dateHeure}}</td>
+             {% if i.etat == 1 %}
+               <td> Present(e) </td>
+             {% elif i.etat == 2 %}
+                <td> Retard </td>
+             {% endif %}
+        {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!--  Modal  Scanner QR code -->
+<div class="modal" id="scannerModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-body">
+      <div class="modal-content p-3">
+        <canvas id="camera-sensor" width="120" height="1"></canvas>
+        <video src="" id="camera-view" autoplay playsinline></video>
+        <button
+          class="d-none"
+          data-bs-toggle="modal"
+          data-bs-target="#ResultatModal"
+          id="btnResQrCode"
+        >
+          resultat
+        </button>
+        <button
+              id="btnCameraCancel"
+              class="d-none"
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal affichage de resultat qr code-->
+<div class="modal" id="ResultatModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-body">
+      <div class="modal-content p-3  mx-2">
+         <!-- Modal Header -->
+         <div class="modal-header">
+          <h4 class="modal-title">Resultat qr code</h4>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <form class="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input
+                type="text"
+                name="id"
+                id="resultatqrcode"
+                class="form-control m-auto mb-2"
+              />
+              <button
+              type="submit"
+              class="btn btn-success m-auto"
+              name="btnAction"
+              value="addPresence"
+              data-bs-dismiss="modal"
+            >
+              Valider
+            </button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  //Affichage de date
+  setInterval(() => {
+    var date = new Date();
+    $("#timer").text(date.toLocaleString("fr"));
+  }, 1000);
+
+  //lecture de du son bip
+  var bip = new Audio("../static/music/beep.mp3");
+  bip.volume = 1;
+  var constraints = {
+    video: { facingMode: "environment" },
+    audio: false,
+  };
+
+  const cameraView = document.querySelector("#camera-view"),
+    //cameraResult = document.getElementById("result"),
+    cameraSensor = document.querySelector("#camera-sensor");
+
+  const filterBtn = [...document.querySelectorAll("#filter")];
+  var capture = setInterval(() => {
+    cameraTriger();
+  }, 3000);
+
+  function cameraTriger() {
+    cameraSensor.width = cameraView.videoWidth;
+    cameraSensor.height = cameraView.videoHeight;
+    cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+    const imageData = cameraSensor
+      .getContext("2d")
+      .getImageData(0, 0, cameraSensor.width, cameraSensor.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    if (code) {
+      bip.play();
+      console.log("QR code detected:", code.data);
+       //Affichage de modal de resultat
+      $('#resultatqrcode').val(code.data);
+      $("#btnCameraCancel").click();
+      $(btnResQrCode).click();
+      
+      //cameraStop()
+      clearInterval(capture);
+
+      //fonction redemarre la camera
+       $("#scanner").click(function () {
+            cameraTriger();
+       })
+      
+    } else {
+      console.log("No QR code detected.");
+    }
+  }
+
+  function cameraStart() {
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(function (stream) {
+        track = stream.getTracks()[0];
+        cameraView.srcObject = stream;
+      })
+      .catch(function (error) {
+        console.error("Ooopss une erreur" + error);
+      });
+  }
+
+  function addCanvas() {
+    const width = video.videoWidith;
+    const height = video.videoHeight;
+    let filterType = this.dataset.filter || 0;
+    console.log(this.dataset, "this", filterType);
+  }
+
+  document.getElementById('scanner').addEventListener("click", cameraStart, false);
+
+  function decodeQRCode(image) {
+    // Get the canvas element
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set the canvas dimensions to the image dimensions
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    // Draw the image onto the canvas
+    ctx.drawImage(image, 0, 0, image.width, image.height);
+
+    // Get the image data from the canvas
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    // Decode the QR code using jsQR
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+    // Return the result
+    return code.data;
+  }
+
+  function cameraStop() {
+    return false
+  }
+
+  
+  
+</script>
+
+<script>
+  var option={month:"long", day:"numeric", year:"numeric"};
+  $(document).ready(function(){
+    $("#datefilter").on("change", function() {
+      var value = new Date($(this).val()).toLocaleDateString("en-us", option).toLowerCase()
+      console.log(value)
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(new Date().toLocaleDateString("en-us", option).toLowerCase()) > -1)
+      });
+  });
+  </script> 
+
+{% endblock content %}

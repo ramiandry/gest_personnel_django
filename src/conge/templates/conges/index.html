@@ -1,0 +1,235 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Conges</title>
+{% endblock %} {% block content %}
+<div class="container bg-light shadow-sm px-3">
+  <div class="card mt-2">
+    <p class="h1 text-uppercase text-center text-danger">gestion de congés</p>
+  </div>
+
+  <div class="container-fluid mt-2 d-flex justify-content-between">
+    <button
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#addModal"
+    >
+      Mettre un personnel en congé
+    </button>
+    <div class="btn-group w-50">
+      <button id="btnTout" class="btn btn-light w-15 border" style="width: 14%" onClick="filtrer('btnTout','')">Tout</button>
+      <button id="btnConge" class="btn btn-light w-15 border" style="width: 14%" onClick="filtrer('btnConge','En congé')">
+        En congé
+      </button>
+      <button id="btnPoste" class="btn btn-light w-15 border" style="width: 14%" onClick="filtrer('btnPoste','repris son poste')">
+        Repris son posté
+      </button>
+    </div>
+  </div>
+  <div class="container-fluid mt-2">
+    <table  class="table table-light table-borderer">
+      <thead>
+        <tr>
+          <th>Avatar</th>
+          <th>Nom et Prénoms</th>
+          <th>Poste</th>
+          <th>Début de congé</th>
+          <th>Fin de congé</th>
+          <th>Repris sa poste</th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for data in dataConges %}
+        <tr>
+          <td>
+            <img
+              src="{{data.employee.avatar.url}}"
+              alt=""
+              srcset=""
+              class="rounded-circle bg-light m-auto"
+              width="30vw"
+            />
+          </td>
+          <td>{{data.employee.nom}} {{data.employee.prenom}}</td>
+          <td>{{data.employee.poste.nom_poste}}</td>
+          <td>{{data.date_debut}}</td>
+          <td>{{data.date_fin}}</td>
+          <td>
+            {% if data.enPoste %}
+            <button class="btn btn-warning" style="width: 80%" disabled>
+              repris son poste
+            </button>
+            {% else %}
+            <button
+              data-bs-toggle="modal"
+              data-bs-target="#supprModal{{data.pk}}"
+              class="btn btn-warning w-80"
+              style="width: 80%"
+            >
+              En congé
+            </button>
+
+            <!-- The Modal Suppression-->
+<div class="modal" id="supprModal{{data.pk}}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header p-0 px-3">
+        <h4 class="modal-title p-0 m-0">Suppression</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form class="" method="post">
+        <!-- Modal body -->
+        <div class="modal-body text-justify">
+          <h4 class="text-justify" style="text-align: justify">
+            Etes vous sûre de que "{{data.employee.nom}} {{data.employee.prenom}}" à pris son poste ?
+          </h4>
+        </div>
+
+        <!-- Modal footer -->
+        <div
+          class="modal-footer d-flex justify-content-around align-items-center m-0 p-0"
+        >
+          <button
+            type="button"
+            class="btn btn-success px-5"
+            data-bs-dismiss="modal"
+          >
+            Non
+          </button>
+          <form>
+            {% csrf_token %}
+            <input type="hidden" value="{{data.pk}}" name="id"/>
+            <button
+              type="submit"
+              name="btnAction"
+              value="btnModPoste"
+              class="btn btn-danger px-5"
+              data-bs-dismiss="modal"
+            >
+              Oui
+            </button>
+          </form>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<!-- The Modal Ajout-->
+<div class="modal" id="addModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header p-1 px-3">
+        <h2 class="modal-title p-0 m-0">Ajouter</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form class="" method="post">
+        {% csrf_token %}
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="m-3 dropdown">
+            <label for="">Recherche par matricule, nom et prénoms :</label>
+            <input
+              type="text"
+              class="form-control"
+              data-bs-toggle="dropdown"
+              style="width: 100%"
+              id="input"
+              name="employee"
+            />
+            <ul class="dropdown-menu" id="myList" style="width: 100%">
+              {% for data in dataEmployee %}
+              <li
+                class="dropdown-item"
+                id="{{data.pk}}"
+                onClick="assignedValue('input', '{{data.pk}}')"
+              >
+                {{data.nom}} {{data.prenom}}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="m-3">
+            <label for="debut">Début :</label>
+            <input
+              type="date"
+              class="form-control"
+              name="debut"
+              style="width: 100%"
+            />
+          </div>
+
+          <div class="m-3">
+            <label for="fin">Fin :</label>
+            <input
+              type="date"
+              class="form-control"
+              name="fin"
+              style="width: 100%"
+            />
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div
+          class="modal-footer d-flex justify-content-around align-items-center"
+        >
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Annuler
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            value="ajouterConge"
+            name="btnAction"
+          >
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $("#input").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myList li").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+
+  function filtrer(idbtn, valeur){
+    $(document).ready(function () {
+      $("#"+idbtn).on("click", function () {
+        var value = valeur.toLowerCase();
+        $("#myTable tr").filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+  }
+
+  $("#btnTout").click();
+</script>
+{% endblock %}
